@@ -18,21 +18,29 @@ include "dbconnection.php";
 <?php
 if (isset($_POST['insertProd'])) {
     $conn->begin_transaction();
+    //$conn->autocommit(FALSE);
     $nome = filter_input(INPUT_POST, "nome");
     $prezzo = filter_input(INPUT_POST, "prezzo");
-    $nome = strip_tags($nome);
     $query = $conn->query("INSERT INTO `prodotti`(`NomeProdotto`, `Prezzo`) VALUES ('" . $nome . "','" . $prezzo . "')");
     if ($query) {
-        echo '<script>'
+        echo
+        '<script>'
         . 'var c = confirm("Sei sicuro?");'
-        . 'if(c==true)'.$conn->commit()
+        . 'if(c==true) location.href="index.php?commitReady=true" ;'
+        . 'else location.href="index.php?commitReady=false";'
         . '</script>';
     } else
-        echo "errore";
+        echo "Errore";
+}
+if (isset($_GET['commitReady'])) {
+    if ($_GET['commitReady'] === true) {
+        if ($conn->commit()) {
+            echo "Prodotto inserito con successo";
+        } else {
+            echo "Si è rilevato un errore";
+        }
+    } else {
+        echo "Hai annullato l'operazione";
+    }
 }
 ?>
-<script type="text/javascript">
-function conferma(){
-    confirm("ciao");
-}
-</script>
