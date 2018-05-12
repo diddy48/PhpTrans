@@ -26,7 +26,11 @@ if (isset($_POST['insertProd'])) {
         echo
         '<script>'
         . 'var c = confirm("Sei sicuro?");'
-        . 'if(c==true) location.href="index.php?commitReady=true" ;'
+        . 'if(c==true){'
+                . '$.ajax({'
+                . 'url : "index.php", data : "commitReady=true",dataType : "json",'
+                . '});'
+        . '}'
         . 'else location.href="index.php?commitReady=false";'
         . '</script>';
     } else
