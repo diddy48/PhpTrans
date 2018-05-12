@@ -17,18 +17,22 @@ include "dbconnection.php";
 </html>
 <?php
 if (isset($_POST['insertProd'])) {
-    $conn->query('START TRANSACTION');
-    $nome = filter_input(INPUT_POST, "nome", FILTER_SANITIZE_STRING);
-    $prezzo = filter_input(INPUT_POST, "prezzo", FILTER_SANITIZE_NUMBER_INT);
+    $conn->begin_transaction();
+    $nome = filter_input(INPUT_POST, "nome");
+    $prezzo = filter_input(INPUT_POST, "prezzo");
     $nome = strip_tags($nome);
-    $query = $conn->query("INSERT INTO `prodotti`(`NomeProdotto`, `Quantita`) VALUES (" . $nome . "," . $prezzo . ")");
-    $conn->query('COMMIT');
-    if($query) echo '<script>alert()</script>';
-    else echo "errore";
+    $query = $conn->query("INSERT INTO `prodotti`(`NomeProdotto`, `Prezzo`) VALUES ('" . $nome . "','" . $prezzo . "')");
+    if ($query) {
+        echo '<script>'
+        . 'var c = confirm("Sei sicuro?");'
+        . 'if(c==true)'.$conn->commit()
+        . '</script>';
+    } else
+        echo "errore";
 }
 ?>
 <script type="text/javascript">
-function alert(){
+function conferma(){
     confirm("ciao");
 }
 </script>
