@@ -11,6 +11,9 @@ include "dbconnection.php";
         <form action="index.php" method="POST">
             <input name="nome" placeholder="Nome prodotto"/>
             <input name="prezzo" placeholder="Prezzo"/>
+            <input name="descrizione" placeholder="Descrizione" value ="Descr"/><br>
+            <input type="radio" name="behaviour" value="commit"> Commit<br>
+            <input type="radio" name="behaviour" value="abort" > Abort<br>
             <input type="submit" name="insertProd">
         </form>
     </body>
@@ -18,33 +21,17 @@ include "dbconnection.php";
 <?php
 if (isset($_POST['insertProd'])) {
     $conn->begin_transaction();
-    //$conn->autocommit(FALSE);
+//$conn->autocommit(FALSE);
     $nome = filter_input(INPUT_POST, "nome");
     $prezzo = filter_input(INPUT_POST, "prezzo");
-    $query = $conn->query("INSERT INTO `prodotti`(`NomeProdotto`, `Prezzo`) VALUES ('" . $nome . "','" . $prezzo . "')");
-    if ($query) {
-        echo
-        '<script>'
-        . 'var c = confirm("Sei sicuro?");'
-        . 'if(c==true){'
-                . '$.ajax({'
-                . 'url : "index.php", data : "commitReady=true",dataType : "json",'
-                . '});'
-        . '}'
-        . 'else location.href="index.php?commitReady=false";'
-        . '</script>';
-    } else
-        echo "Errore";
-}
-if (isset($_GET['commitReady'])) {
-    if ($_GET['commitReady'] === true) {
-        if ($conn->commit()) {
-            echo "Prodotto inserito con successo";
-        } else {
-            echo "Si è rilevato un errore";
-        }
-    } else {
-        echo "Hai annullato l'operazione";
+    $descrizione = filter_input(INPUT_POST, "descrizione");
+    for ($i = 1; $i < 10000; $i++) {
+        $conn->query("INSERT INTO `prodotti`(`NomeProdotto`, `Prezzo`,`Descrizione`) VALUES ('" . $nome . "','" . $prezzo . "','" . $descrizione . "')");
     }
+    if ($_POST['behaviour'] == 'commit') {
+            $conn->commit();
+            echo "Query eseguita con successo";
+    } else
+        echo "La query è stata abortita";
 }
 ?>
